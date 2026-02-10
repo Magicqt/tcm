@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>传统中医临证思维训练表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 基础设置 */
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f5f5f0;
+            font-size: 10.5pt;
+            line-height: 1.5;
+        }
+        
+        .title-font {
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        /* 关键：防止元素被分页截断 - 使用更强制的方式 */
+        .no-break {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            page-break-before: auto;
+            page-break-after: auto;
+        }
+
+        /* 表单区块强制不跨页 */
+        .form-section {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            margin-bottom: 16px;
+        }
+
+        /* 照片容器特殊处理 - 确保整组照片在同一页 */
+        .photo-container {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+
+        /* 单个照片框 */
+        .photo-box {
+            background: white;
+            border: 2px dashed #d1d5db;
+            border-radius: 4px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 12px;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+
+        /* 标题与内容保持在一起 */
+        .section-title {
+            page-break-after: avoid;
+            break-after: avoid;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* 打印优化 */
+        @media print {
+            body {
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .paper-shadow {
+                box-shadow: none;
+            }
+            
+            /* 确保所有元素颜色正确打印 */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* 打印时确保表单区块不跨页 */
+            .form-section {
+                page-break-inside: avoid !important;
+            }
+        }
+
+        /* 屏幕显示优化 */
+        @media screen {
+            .print-optimized {
+                max-width: 210mm;
+                margin: 0 auto;
+                background: white;
+            }
+        }
+
+        .checkbox-custom {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid #8b7355;
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+        
+        .checkbox-custom:checked {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+        
+        .checkbox-custom:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .input-underline {
+            border: none;
+            border-bottom: 1px solid #8b7355;
+            background: transparent;
+            padding: 2px 4px;
+            font-size: 10pt;
+            width: 100%;
+        }
+        
+        .input-underline:focus {
+            outline: none;
+            border-bottom: 2px solid #dc2626;
+        }
+
+        /* 表格样式 - 确保不跨页 */
+        .form-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.5pt;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+        
+        .form-table tr {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+        
+        .form-table td, .form-table th {
+            border: 1px solid #d1d5db;
+            padding: 6px 8px;
+            vertical-align: top;
+            page-break-inside: avoid !important;
+        }
+        
+        .form-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        /* 复选框组容器 */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            page-break-inside: avoid !important;
+        }
+        
+        .checkbox-item {
+            display: inline-flex;
+            align-items: center;
+            background: #f9fafb;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 9.5pt;
+            white-space: nowrap;
+        }
+
+        /* 文本域样式 */
+        textarea.form-textarea {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 9.5pt;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        /* 按钮样式 */
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .btn-pdf {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-pdf:hover {
+            background: #b91c1c;
+        }
+
+        .btn-print {
+            background: #4b5563;
+            color: white;
+        }
+
+        .btn-print:hover {
+            background: #374151;
+        }
+
+        /* 内容卡片 */
+        .content-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        /* 紧凑模式 */
+        .compact-text {
+            font-size: 9.5pt;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body class="py-6 px-4">
+
+    <!-- 浮动按钮区域 -->
+    <div class="fixed right-6 top-6 z-50 flex flex-col gap-3 no-print">
+        <button onclick="generatePDF()" class="action-btn btn-pdf" title="导出PDF">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span>导出PDF</span>
+        </button>
+        <button onclick="window.print()" class="action-btn btn-print" title="打印">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+            </svg>
+            <span>打印</span>
+        </button>
+    </div>
+
+    <!-- 主容器 -->
+    <div id="form-container" class="max-w-[210mm] mx-auto bg-white paper-shadow rounded-lg overflow-hidden print-optimized">
+        
+        <!-- 标题头 -->
+        <div class="bg-gradient-to-r from-red-900 via-red-800 to-amber-900 text-white p-5 relative no-break">
+            <h1 class="text-xl font-bold title-font mb-1">传统中医临证思维训练表</h1>
+            <p class="text-amber-200 text-xs">Traditional Chinese Medicine Clinical Thinking Training Form v2.3</p>
+            <p class="text-xs text-amber-100 mt-1 opacity-80">填表说明：请如实填写患者信息，涉及隐私仅供教学使用</p>
+        </div>
+
+        <form id="tcmForm" class="p-5">
+            
+            <!-- 第一部分：基本信息 -->
+            <div class="form-section no-break">
+                <div class="section-title">
+                    <div class="w-6 h-6 rounded-full bg-red-800 text-white flex items-center justify-center text-sm font-bold shrink-0">0</div>
+                    <h2 class="text-base font-bold text-gray-800 title-font">基本情况</h2>
+                </div>
+                
+                <div class="content-card bg-amber-50 border-amber-200">
+                    <table class="form-table">
+                        <tr>
+                            <td width="10%">姓名</td>
+                            <td width="23%"><input type="text" name="patient_name" class="input-underline"></td>
+                            <td width="10%">性别</td>
+                            <td width="23%">
+                                <select name="gender" class="input-underline bg-transparent">
+                                    <option value="">请选择</option>
+                                    <option value="男">男</option>
+                                    <option value="女">女</option>
+                                </select>
+                            </td>
+                            <td width="10%">年龄</td>
+                            <td width="23%"><input type="number" name="age" class="input-underline"></td>
+                        </tr>
+                        <tr>
+                            <td>身高</td>
+                            <td><input type="number" name="height" class="input-underline" placeholder="cm"></td>
+                            <td>体重</td>
+                            <td><input type="number" name="weight" class="input-underline" placeholder="kg"></td>
+                            <td>婚姻</td>
+                            <td>
+                                <label class="mr-3 text-sm"><input type="checkbox" name="marriage" value="已婚" class="checkbox-custom">已婚</label>
+                                <label class="text-sm"><input type="checkbox" name="marriage" value="未婚" class="checkbox-custom">未婚</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>出生城市</td>
+                            <td><input type="text" name="birth_city" class="input-underline"></td>
+                            <td>现居地</td>
+                            <td><input type="text" name="current_city" class="input-underline"></td>
+                            <td>职业</td>
+                            <td><input type="text" name="occupation" class="input-underline"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- 照片区域 - 关键优化：整体不跨页 -->
+                <div class="photo-container no-break mt-3">
+                    <h3 class="font-bold text-gray-800 mb-3 text-sm">患者照片资料（拍照要求：自然光，关闭美颜，不化妆，不戴眼镜）</h3>
+                    
+                    <div class="mb-3">
+                        <p class="text-xs text-gray-600 mb-2">1) 面部、舌苔、舌底照片：</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="photo-box">[面部照片]</div>
+                            <div class="photo-box">[舌象照片]</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-gray-600 mb-2">2) 腕部-手、小腿-脚照片：</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="photo-box">[手部照片]</div>
+                            <div class="photo-box">[足部照片]</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 1: 望闻诊 -->
+            <div class="form-section no-break">
+                <div class="section-title">
+                    <div class="w-6 h-6 rounded-full bg-red-800 text-white flex items-center justify-center text-sm font-bold shrink-0">1</div>
+                    <div>
+                        <h2 class="text-base font-bold text-gray-800 title-font">望闻诊</h2>
+                        <p class="text-xs text-gray-600">目的：获得形气神之直观感受与神气虚实判断</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h3 class="text-sm font-bold text-amber-900 mb-3 border-l-4 border-amber-600 pl-2">1.1 望诊</h3>
+                    
+                    <!-- 神 -->
+                    <div class="mb-3">
+                        <h4 class="font-semibold text-gray-800 mb-2 text-sm">神</h4>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" name="shen" value="充足" class="checkbox-custom">充足</label>
+                            <label class="checkbox-item"><input type="checkbox" name="shen" value="不足" class="checkbox-custom">不足</label>
+                            <label class="checkbox-item"><input type="checkbox" name="shen" value="散乱" class="checkbox-custom">散乱，不能集中注意力</label>
+                            <label class="checkbox-item"><input type="checkbox" name="shen" value="专注" class="checkbox-custom">专注</label>
+                            <label class="checkbox-item"><input type="checkbox" name="shen" value="容易紧张" class="checkbox-custom">容易紧张</label>
+                            <label class="checkbox-item"><input type="checkbox" name="shen" value="恐惧、怕黑、噩梦" class="checkbox-custom">恐惧、怕黑、噩梦</label>
+                        </div>
+                    </div>
+
+                    <!-- 面色 -->
+                    <div class="mb-3">
+                        <h4 class="font-semibold text-gray-800 mb-2 text-sm">面色</h4>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" name="complexion" value="正常" class="checkbox-custom">正常</label>
+                            <label class="checkbox-item"><input type="checkbox" name="complexion" value="过于红亮" class="checkbox-custom">过于红亮</label>
+                            <label class="checkbox-item"><input type="checkbox" name="complexion" value="无光彩" class="checkbox-custom">无光彩</label>
+                            <label class="checkbox-item"><input type="checkbox" name="complexion" value="晦暗" class="checkbox-custom">晦暗</label>
+                            <label class="checkbox-item"><input type="checkbox" name="complexion" value="苍白" class="checkbox-custom">苍白</label>
+                            <label class="checkbox-item"><input type="checkbox" name="complexion" value="黄" class="checkbox-custom">黄</label>
+                        </div>
+                    </div>
+
+                    <!-- 舌诊表格 -->
+                    <div class="mb-3">
+                        <h4 class="font-semibold text-gray-800 mb-2 text-sm">舌</h4>
+                        <table class="form-table">
+                            <tr class="bg-gray-50">
+                                <td width="12%">舌体</td>
+                                <td class="checkbox-group" style="border: none; padding: 4px;">
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_body" value="正常" class="checkbox-custom">正常</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_body" value="胖大" class="checkbox-custom">胖大</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_body" value="歪斜" class="checkbox-custom">歪斜</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_body" value="瘦小" class="checkbox-custom">瘦小</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_body" value="齿痕" class="checkbox-custom">齿痕</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>舌苔</td>
+                                <td class="checkbox-group" style="border: none; padding: 4px;">
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_coating" value="正常" class="checkbox-custom">正常</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_coating" value="厚腻" class="checkbox-custom">厚腻</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_coating" value="剥脱" class="checkbox-custom">剥脱</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_coating" value="无苔" class="checkbox-custom">无苔</label>
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50">
+                                <td>舌色</td>
+                                <td class="checkbox-group" style="border: none; padding: 4px;">
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_color" value="正常" class="checkbox-custom">正常</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_color" value="过红" class="checkbox-custom">过红</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_color" value="苍白" class="checkbox-custom">苍白</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="tongue_color" value="紫暗" class="checkbox-custom">紫暗</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- 水肿 -->
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2 text-sm">水肿</h4>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" name="edema" value="下肢水肿" class="checkbox-custom">下肢水肿</label>
+                            <label class="checkbox-item"><input type="checkbox" name="edema" value="面部水肿" class="checkbox-custom">面部水肿</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1.2 闻诊 -->
+                <div class="content-card mt-3">
+                    <h3 class="text-sm font-bold text-amber-900 mb-3 border-l-4 border-amber-600 pl-2">1.2 闻诊</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item"><input type="checkbox" name="auscultation" value="神不足" class="checkbox-custom">神不足</label>
+                        <label class="checkbox-item"><input type="checkbox" name="auscultation" value="神充足" class="checkbox-custom">神充足</label>
+                        <label class="checkbox-item"><input type="checkbox" name="auscultation" value="清晰" class="checkbox-custom">清晰</label>
+                        <label class="checkbox-item"><input type="checkbox" name="auscultation" value="混乱" class="checkbox-custom">混乱</label>
+                        <label class="checkbox-item"><input type="checkbox" name="auscultation" value="勇" class="checkbox-custom">勇</label>
+                        <label class="checkbox-item"><input type="checkbox" name="auscultation" value="怯" class="checkbox-custom">怯</label>
+                        <label class="checkbox-item"><input type="checkbox" name="auscultation" value="松" class="checkbox-custom">松</label>
+                        <label class="checkbox-item"><input type="checkbox" name="auscultation" value="紧" class="checkbox-custom">紧</label>
+                        <label class="checkbox-item"><input type="checkbox" name="auscultation" value="虚" class="checkbox-custom">虚</label>
+                        <label class="checkbox-item"><input type="checkbox" name="auscultation" value="实" class="checkbox-custom">实</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: 生命信息 -->
+            <div class="form-section no-break">
+                <div class="section-title">
+                    <div class="w-6 h-6 rounded-full bg-red-800 text-white flex items-center justify-center text-sm font-bold shrink-0">2</div>
+                    <div>
+                        <h2 class="text-base font-bold text-gray-800 title-font">生命基本信息问诊</h2>
+                        <p class="text-xs text-gray-600">目的：了解气机，获得关于本气、三焦气机之基本状态</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <table class="form-table">
+                        <tr class="bg-amber-50">
+                            <td colspan="2" class="font-bold text-amber-900 text-sm">2.1 中焦，脾胃之气</td>
+                        </tr>
+                        <tr>
+                            <td width="10%">饮食</td>
+                            <td>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item"><input type="checkbox" name="diet" value="尚可" class="checkbox-custom">尚可</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="diet" value="胃口不佳" class="checkbox-custom">胃口不佳，容易腹胀</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="diet" value="食欲亢进" class="checkbox-custom">食欲亢进</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="diet" value="食生冷不适" class="checkbox-custom">食生冷不适</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="diet" value="渴喜热" class="checkbox-custom">渴喜热</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="diet" value="渴喜冷" class="checkbox-custom">渴喜冷</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>大便</td>
+                            <td>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item"><input type="checkbox" name="stool" value="正常" class="checkbox-custom">正常（一日 <input type="text" class="input-underline w-12" style="display: inline-block;"> 次）</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="stool" value="经常便秘" class="checkbox-custom">经常便秘</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="stool" value="便溏" class="checkbox-custom">大便泻或便溏，粘腻</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="stool" value="便味臭秽" class="checkbox-custom">便味臭秽</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="bg-amber-50">
+                            <td colspan="2" class="font-bold text-amber-900 text-sm">2.2 下焦及三焦水道</td>
+                        </tr>
+                        <tr>
+                            <td>小便</td>
+                            <td>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item"><input type="checkbox" name="urine" value="正常" class="checkbox-custom">正常</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="urine" value="夜尿三次以上" class="checkbox-custom">夜尿三次以上</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="urine" value="尿频或尿急" class="checkbox-custom">尿频或尿急</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="urine" value="尿不净" class="checkbox-custom">尿不净</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="urine" value="尿痛或血尿" class="checkbox-custom">尿痛或血尿</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="bg-amber-50">
+                            <td colspan="2" class="font-bold text-amber-900 text-sm">2.3 阴阳平衡水平及神气开阖状态 - 睡眠</td>
+                        </tr>
+                        <tr>
+                            <td>睡眠</td>
+                            <td>
+                                <div class="checkbox-group mb-2">
+                                    <label class="checkbox-item"><input type="checkbox" name="sleep" value="良好" class="checkbox-custom">良好</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="sleep" value="尚可" class="checkbox-custom">尚可</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="sleep" value="入睡困难" class="checkbox-custom">入睡困难</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="sleep" value="频繁醒来" class="checkbox-custom">频繁醒来</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="sleep" value="多梦" class="checkbox-custom">多梦且梦境生动</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="sleep" value="容易早醒" class="checkbox-custom">容易早醒</label>
+                                </div>
+                                <div class="text-sm">
+                                    晚上入睡时间：<input type="text" class="input-underline w-24" style="display: inline-block;">
+                                    晚睡原因：<input type="text" class="input-underline w-48" style="display: inline-block;">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="bg-amber-50">
+                            <td colspan="2" class="font-bold text-amber-900 text-sm">2.4 上焦及里气是否达于表 - 出汗</td>
+                        </tr>
+                        <tr>
+                            <td>出汗</td>
+                            <td>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item"><input type="checkbox" name="sweat" value="正常" class="checkbox-custom">正常</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="sweat" value="汗出过多" class="checkbox-custom">汗出过多</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="sweat" value="睡时汗多" class="checkbox-custom">睡时汗多</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="sweat" value="头胸部汗过多" class="checkbox-custom">头胸部汗过多</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="sweat" value="很少出汗" class="checkbox-custom">很少出汗</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="sweat" value="下半身无汗" class="checkbox-custom">下半身无汗</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="sweat" value="有异常气味" class="checkbox-custom">有异常气味</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="bg-amber-50">
+                            <td colspan="2" class="font-bold text-amber-900 text-sm">2.5 阳气水平及输布、经络通畅度 - 运动</td>
+                        </tr>
+                        <tr>
+                            <td>运动</td>
+                            <td>
+                                <div class="checkbox-group mb-2">
+                                    <label class="checkbox-item"><input type="checkbox" name="exercise" value="基本不运动" class="checkbox-custom">基本不运动</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="exercise" value="经常散步" class="checkbox-custom">经常散步</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="exercise" value="慢跑或其它有氧运动" class="checkbox-custom">慢跑或其它有氧运动</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="exercise" value="肌肉训练" class="checkbox-custom">肌肉训练</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="exercise" value="传统锻炼" class="checkbox-custom">传统锻炼（站桩、太极、瑜伽等）</label>
+                                </div>
+                                <div class="text-sm">
+                                    每周的项目、频率和时长：<input type="text" class="input-underline w-full" style="display: inline-block;">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- 女性专项 -->
+                <div class="content-card mt-3 bg-pink-50 border-pink-200">
+                    <h3 class="text-sm font-bold text-pink-900 mb-3">2.6 下焦、血分及邪气出口（适龄女性填写）</h3>
+                    <table class="form-table">
+                        <tr>
+                            <td width="10%">月经</td>
+                            <td>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item"><input type="checkbox" name="menstruation" value="正常" class="checkbox-custom">正常</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="menstruation" value="周期缩短" class="checkbox-custom">周期缩短</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="menstruation" value="周期延长" class="checkbox-custom">周期延长</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="menstruation" value="周期不定" class="checkbox-custom">周期不定</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="menstruation" value="经量过少" class="checkbox-custom">经量过少</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="menstruation" value="经量过多" class="checkbox-custom">经量过多</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="menstruation" value="经血发暗或有血块" class="checkbox-custom">经血发暗或有血块</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="menstruation" value="月经色淡" class="checkbox-custom">月经色淡</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="menstruation" value="痛经" class="checkbox-custom">痛经</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="bg-pink-100">
+                            <td>白带</td>
+                            <td>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item"><input type="checkbox" name="leukorrhea" value="正常" class="checkbox-custom">正常</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="leukorrhea" value="量多清稀" class="checkbox-custom">量多，清稀</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="leukorrhea" value="粘稠色黄" class="checkbox-custom">粘稠，色黄，或特殊气味</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="leukorrhea" value="时有妇科感染" class="checkbox-custom">时有妇科感染</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="leukorrhea" value="慢性妇科炎症" class="checkbox-custom">慢性妇科炎症</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>流产史</td>
+                            <td>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item"><input type="checkbox" name="abortion" value="1次" class="checkbox-custom">1次</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="abortion" value="2次" class="checkbox-custom">2次</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="abortion" value="3次或更多" class="checkbox-custom">3次或更多</label>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Step 3: 三焦问诊 -->
+            <div class="form-section no-break">
+                <div class="section-title">
+                    <div class="w-6 h-6 rounded-full bg-red-800 text-white flex items-center justify-center text-sm font-bold shrink-0">3</div>
+                    <div>
+                        <h2 class="text-base font-bold text-gray-800 title-font">三焦问诊</h2>
+                        <p class="text-xs text-gray-600">目的：了解病机，即邪气对气机的影响范围和程度</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h3 class="text-sm font-bold text-amber-900 mb-3">3.1 是否有与下焦（精、元气）不足相关的情况？</h3>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="皮肤暗淡" class="checkbox-custom">皮肤暗淡、干燥、缺乏光彩、脱发</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="肌肉消瘦" class="checkbox-custom">肌肉消瘦，体重低于正常或下降过快</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="身体虚冷" class="checkbox-custom">身体虚冷，手脚常年冰冷，腿肿</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="腰酸" class="checkbox-custom">经常腰酸或者关节痛</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="夜尿多" class="checkbox-custom">夜尿3次以上</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="大小便频繁" class="checkbox-custom">大小便频繁，大便软或泄</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="精力不足" class="checkbox-custom">精力不足，看一会儿书或电脑就累</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="记忆力下降" class="checkbox-custom">记忆力下降</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="情绪不稳" class="checkbox-custom">情绪不稳或情绪低落</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="视力下降" class="checkbox-custom">视力下降、眼底病变、眼泪异常</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="肚子很大" class="checkbox-custom">肚子很大</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="妇科或性功能" class="checkbox-custom">妇科或性功能有问题，生育困难</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="恐惧怕黑" class="checkbox-custom">恐惧，怕黑</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="自幼体弱" class="checkbox-custom">自幼哮喘、尿床、早产儿、多次流产</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="长期泌尿问题" class="checkbox-custom">长期泌尿系统问题</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="水肿" class="checkbox-custom">水肿</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="衰老痴呆" class="checkbox-custom">衰老、老年痴呆</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="尿蛋白肾病" class="checkbox-custom">尿蛋白，肾脏疾病</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="肝炎肝硬化" class="checkbox-custom">肝炎，肝硬化</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="糖尿病痛风" class="checkbox-custom">糖尿病，痛风</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="心脑血管" class="checkbox-custom">心脑血管疾病</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="带状疱疹" class="checkbox-custom">带状疱疹</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="恶性肿瘤" class="checkbox-custom">恶性肿瘤</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="免疫系统疾病" class="checkbox-custom">强直性脊柱炎、类风湿、红斑狼疮等</label>
+                        <label class="flex items-center"><input type="checkbox" name="lower_jiao" value="器官衰竭" class="checkbox-custom">器官衰竭</label>
+                        <label class="flex items-center col-span-2">
+                            <input type="checkbox" name="lower_jiao" value="其它" class="checkbox-custom">
+                            其它重大疾病：<input type="text" class="input-underline w-64" style="display: inline-block; margin-left: 4px;">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="content-card mt-3">
+                    <h3 class="text-sm font-bold text-amber-900 mb-3">3.2 是否有与中焦（中气）不足相关的症状？</h3>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="没胃口" class="checkbox-custom">没胃口，吃什么都消化不了，或吃了就胀</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="胃痛腹痛" class="checkbox-custom">有明显的胃痛，腹部痛</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="口气重" class="checkbox-custom">口气重，口腔溃疡，牙龈问题</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="青春痘" class="checkbox-custom">青春痘</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="慢性皮肤病" class="checkbox-custom">慢性皮肤病</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="体弱无力" class="checkbox-custom">体弱无力</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="消瘦" class="checkbox-custom">消瘦（肌肉松），肌肉不足</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="肥胖" class="checkbox-custom">肥胖（过于结实或臃肿）</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="高血脂脂肪肝" class="checkbox-custom">高血脂或脂肪肝</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="高血糖高尿酸" class="checkbox-custom">高血糖或高尿酸</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="胆结石" class="checkbox-custom">胆结石或胆囊息肉</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="各种息肉" class="checkbox-custom">各种息肉</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="乳腺增生" class="checkbox-custom">乳腺增生及其它增生</label>
+                        <label class="flex items-center"><input type="checkbox" name="middle_jiao" value="大便异常" class="checkbox-custom">大便异常，便溏或便秘</label>
+                    </div>
+                </div>
+
+                <div class="content-card mt-3">
+                    <h3 class="text-sm font-bold text-amber-900 mb-3">3.3 是否有与上焦（卫气）不足相关的症状？</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item"><input type="checkbox" name="upper_jiao" value="异常出汗" class="checkbox-custom">异常出汗</label>
+                        <label class="checkbox-item"><input type="checkbox" name="upper_jiao" value="反复感冒" class="checkbox-custom">反复感冒</label>
+                        <label class="checkbox-item"><input type="checkbox" name="upper_jiao" value="恶风怕寒" class="checkbox-custom">恶风、怕寒、经常喷嚏</label>
+                        <label class="checkbox-item"><input type="checkbox" name="upper_jiao" value="过敏症状" class="checkbox-custom">皮肤、鼻子过敏症状</label>
+                        <label class="checkbox-item"><input type="checkbox" name="upper_jiao" value="长期咳嗽" class="checkbox-custom">长期咳嗽</label>
+                        <label class="checkbox-item"><input type="checkbox" name="upper_jiao" value="急性荨麻疹" class="checkbox-custom">急性荨麻疹</label>
+                    </div>
+                </div>
+
+                <div class="content-card mt-3">
+                    <h3 class="text-sm font-bold text-amber-900 mb-2">3.4 主诉</h3>
+                    <p class="text-xs text-gray-600 mb-2">指促使患者就诊的主要症状或体征，以及持续时间，用词精练</p>
+                    <textarea name="chief_complaint" rows="2" class="form-textarea"></textarea>
+                </div>
+
+                <div class="content-card mt-3">
+                    <h3 class="text-sm font-bold text-amber-900 mb-2">3.5 现病史</h3>
+                    <p class="text-xs text-gray-600 mb-2">（1）起病时间、缓急，可能的病因和诱因；（2）主要症状出现的时间、部位、性质、程度及其演变过程；（3）伴随症状的特点及变化；（4）与本病有关的慢性病或旧病复发情况；（5）发病以来的诊疗经过</p>
+                    <textarea name="present_illness" rows="4" class="form-textarea"></textarea>
+                </div>
+
+                <div class="content-card mt-3">
+                    <h3 class="text-sm font-bold text-amber-900 mb-2">3.6 既往史</h3>
+                    <p class="text-xs text-gray-600 mb-2">既往一般健康状况、重大疾病史、传染病史、外伤手术史、药物食物过敏史等</p>
+                    <textarea name="past_history" rows="3" class="form-textarea"></textarea>
+                </div>
+
+                <div class="content-card mt-3">
+                    <h3 class="text-sm font-bold text-amber-900 mb-2">3.7 患者家庭、工作、社交、生活方面的简介</h3>
+                     <textarea name="life_info" rows="3" class="form-textarea"></textarea>
+					                </div>
+					
+					                <div class="content-card mt-3">
+					                    <h3 class="text-sm font-bold text-amber-900 mb-3">3.8 患者饮食习惯与偏好</h3>
+					                    
+					                    <div class="mb-3">
+					                        <h4 class="font-semibold text-gray-800 mb-2 text-sm">饮食习惯</h4>
+					                        <div class="checkbox-group mb-2">
+					                            <label class="checkbox-item"><input type="checkbox" name="diet_habit" value="饭菜均衡" class="checkbox-custom">饭菜均衡</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="diet_habit" value="主食为主" class="checkbox-custom">主食为主</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="diet_habit" value="很少吃主食" class="checkbox-custom">很少吃主食</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="diet_habit" value="素菜为主" class="checkbox-custom">素菜为主</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="diet_habit" value="荤菜为主" class="checkbox-custom">荤菜为主</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="diet_habit" value="荤素搭配" class="checkbox-custom">荤素搭配</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="diet_habit" value="很少自己做饭" class="checkbox-custom">很少自己做饭</label>
+					                        </div>
+					                        <div class="text-sm">
+					                            补充说明：<input type="text" name="diet_habit_other" class="input-underline w-full" style="display: inline-block;">
+					                        </div>
+					                    </div>
+					
+					                    <div class="mb-3">
+					                        <h4 class="font-semibold text-gray-800 mb-2 text-sm">口味及偏好</h4>
+					                        <div class="checkbox-group">
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="酸" class="checkbox-custom">酸</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="甘" class="checkbox-custom">甘</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="咸" class="checkbox-custom">咸</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="辛辣" class="checkbox-custom">辛辣</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="苦" class="checkbox-custom">苦</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="煎炸烧烤" class="checkbox-custom">煎炸烧烤</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="甜点" class="checkbox-custom">甜点</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="水果" class="checkbox-custom">水果</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="乳制品" class="checkbox-custom">乳制品</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="零食" class="checkbox-custom">零食</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="碳酸饮料" class="checkbox-custom">碳酸饮料</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="茶" class="checkbox-custom">茶</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="酒" class="checkbox-custom">酒</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="taste" value="烟" class="checkbox-custom">烟</label>
+					                            <label class="checkbox-item">
+					                                <input type="checkbox" name="taste" value="其它" class="checkbox-custom">
+					                                其它：<input type="text" name="taste_other" class="input-underline w-24" style="display: inline-block;">
+					                            </label>
+					                        </div>
+					                    </div>
+					
+					                    <div class="grid grid-cols-2 gap-4 mb-3">
+					                        <div>
+					                            <h4 class="font-semibold text-gray-800 mb-2 text-sm">不喜欢的味道或食物</h4>
+					                            <input type="text" name="dislike_food" class="input-underline w-full">
+					                        </div>
+					                        <div>
+					                            <h4 class="font-semibold text-gray-800 mb-2 text-sm">过敏或食后不适的食物</h4>
+					                            <input type="text" name="allergy_food" class="input-underline w-full">
+					                        </div>
+					                    </div>
+					
+					                    <div>
+					                        <h4 class="font-semibold text-gray-800 mb-2 text-sm">近期饮食情况</h4>
+					                        <div class="checkbox-group mb-2">
+					                            <label class="checkbox-item"><input type="checkbox" name="recent_diet" value="如常" class="checkbox-custom">如常</label>
+					                            <label class="checkbox-item"><input type="checkbox" name="recent_diet" value="特别之处" class="checkbox-custom">特别之处</label>
+					                        </div>
+					                        <textarea name="recent_diet_details" rows="2" placeholder="如有特别之处请详细描述" class="form-textarea"></textarea>
+					                    </div>
+					                </div>
+					            </div>
+					
+					            <!-- Step 4: 切诊 -->
+					            <div class="form-section no-break">
+					                <div class="section-title">
+					                    <div class="w-6 h-6 rounded-full bg-red-800 text-white flex items-center justify-center text-sm font-bold shrink-0">4</div>
+					                    <div>
+					                        <h2 class="text-base font-bold text-gray-800 title-font">切诊</h2>
+					                        <p class="text-xs text-gray-600">目的：在以上信息采集及辨证结果的基础上，再澄清、确认</p>
+					                    </div>
+					                </div>
+					
+					                <div class="content-card">
+					                    <table class="form-table">
+					                        <tr>
+					                            <td width="12%">人迎</td>
+					                            <td><input type="text" name="palpation_renying" class="input-underline"></td>
+					                            <td width="12%">寸口</td>
+					                            <td><input type="text" name="palpation_cunkou" class="input-underline"></td>
+					                        </tr>
+					                        <tr>
+					                            <td>腹部</td>
+					                            <td><input type="text" name="palpation_abdomen" class="input-underline"></td>
+					                            <td>胸部</td>
+					                            <td><input type="text" name="palpation_chest" class="input-underline"></td>
+					                        </tr>
+					                        <tr>
+					                            <td>四肢</td>
+					                            <td><input type="text" name="palpation_limbs" class="input-underline"></td>
+					                            <td>其他</td>
+					                            <td><input type="text" name="palpation_other" class="input-underline"></td>
+					                        </tr>
+					                    </table>
+					                </div>
+					            </div>
+					
+					            <!-- 第二部分：辨证结果 -->
+					            <div class="form-section no-break bg-gradient-to-br from-amber-50 to-red-50 p-4 rounded-lg border-2 border-amber-200">
+					                <h2 class="text-lg font-bold text-amber-900 title-font mb-4 text-center">二、整体格局判断及辨证结果、治疗方向</h2>
+					
+					                <div class="grid grid-cols-3 gap-3 mb-4">
+					                    <div class="bg-white p-3 rounded shadow-sm no-break">
+					                        <h3 class="font-bold text-red-800 text-center text-sm border-b border-red-200 pb-1 mb-2">神</h3>
+					                        <div class="text-sm space-y-1">
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_shen" value="神有余" class="checkbox-custom">神有余</label>
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_shen" value="神不足" class="checkbox-custom">神不足</label>
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_shen" value="神虚衰" class="checkbox-custom">神虚衰</label>
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_shen" value="邪祟" class="checkbox-custom">邪祟</label>
+					                        </div>
+					                    </div>
+					                    <div class="bg-white p-3 rounded shadow-sm no-break">
+					                        <h3 class="font-bold text-red-800 text-center text-sm border-b border-red-200 pb-1 mb-2">气</h3>
+					                        <div class="text-sm space-y-1">
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_qi" value="气有余" class="checkbox-custom">气有余</label>
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_qi" value="气不足" class="checkbox-custom">气不足</label>
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_qi" value="气内郁" class="checkbox-custom">气内郁</label>
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_qi" value="气外散" class="checkbox-custom">气外散</label>
+					                        </div>
+					                    </div>
+					                    <div class="bg-white p-3 rounded shadow-sm no-break">
+					                        <h3 class="font-bold text-red-800 text-center text-sm border-b border-red-200 pb-1 mb-2">形</h3>
+					                        <div class="text-sm space-y-1">
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_form" value="形有余" class="checkbox-custom">形有余</label>
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_form" value="形不足" class="checkbox-custom">形不足</label>
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_form" value="形肥厚" class="checkbox-custom">形肥厚</label>
+					                            <label class="flex items-center"><input type="checkbox" name="pattern_form" value="形瘦薄" class="checkbox-custom">形瘦薄</label>
+					                        </div>
+					                    </div>
+					                </div>
+					
+					                <div class="bg-white p-4 rounded shadow-sm mb-4 no-break">
+					                    <h3 class="font-bold text-amber-900 mb-3 text-sm">辨证结果</h3>
+					                    
+					                    <div class="grid grid-cols-2 gap-4 text-sm mb-3">
+					                        <div>
+					                            <span class="font-semibold">气机：</span>
+					                            <label class="mr-2"><input type="checkbox" name="qi_mechanism" value="中气虚" class="checkbox-custom">中气虚</label>
+					                            <label class="mr-2"><input type="checkbox" name="qi_mechanism" value="元气虚" class="checkbox-custom">元气虚</label>
+					                            <label><input type="checkbox" name="qi_mechanism" value="情志" class="checkbox-custom">情志</label>
+					                        </div>
+					                        <div>
+					                            <span class="font-semibold">气机：</span>
+					                            <label class="mr-2"><input type="checkbox" name="qi_dynamic" value="郁热" class="checkbox-custom">郁热</label>
+					                            <label class="mr-2"><input type="checkbox" name="qi_dynamic" value="风寒" class="checkbox-custom">风寒</label>
+					                            <label class="mr-2"><input type="checkbox" name="qi_dynamic" value="积食" class="checkbox-custom">积食</label>
+					                            <label class="mr-2"><input type="checkbox" name="qi_dynamic" value="积粪" class="checkbox-custom">积粪</label>
+					                            <label class="mr-2"><input type="checkbox" name="qi_dynamic" value="淤血" class="checkbox-custom">淤血</label>
+					                            <label><input type="checkbox" name="qi_dynamic" value="湿浊" class="checkbox-custom">湿浊</label>
+					                        </div>
+					                    </div>
+					
+					                    <div class="grid grid-cols-2 gap-4 text-sm mb-3">
+					                        <div>
+					                            <span class="font-semibold">邪气致病：</span>
+					                            <label class="mr-2"><input type="checkbox" name="pathogen" value="上焦" class="checkbox-custom">上焦</label>
+					                            <label class="mr-2"><input type="checkbox" name="pathogen" value="中焦" class="checkbox-custom">中焦</label>
+					                            <label class="mr-2"><input type="checkbox" name="pathogen" value="下焦" class="checkbox-custom">下焦</label>
+					                            <label class="mr-2"><input type="checkbox" name="pathogen" value="气分" class="checkbox-custom">气分</label>
+					                            <label class="mr-2"><input type="checkbox" name="pathogen" value="气分血分之间" class="checkbox-custom">气分血分之间</label>
+					                            <label class="mr-2"><input type="checkbox" name="pathogen" value="血分" class="checkbox-custom">血分</label>
+					                            <label><input type="checkbox" name="pathogen" value="深层血分" class="checkbox-custom">深层血分</label>
+					                        </div>
+					                        <div>
+					                            <span class="font-semibold">所在层次：</span>
+					                            <label class="mr-2"><input type="checkbox" name="level" value="正气虚为本" class="checkbox-custom">正气虚为本，邪气为标</label>
+					                            <label><input type="checkbox" name="level" value="邪气盛为本" class="checkbox-custom">邪气盛为本，正气虚为标</label>
+					                        </div>
+					                    </div>
+					
+					                    <div class="grid grid-cols-3 gap-4 text-sm mb-3">
+					                        <div>
+					                            <span class="font-semibold">和：</span>
+					                            <label class="mr-2"><input type="checkbox" name="harmony" value="阴证" class="checkbox-custom">阴证</label>
+					                            <label><input type="checkbox" name="harmony" value="阳证" class="checkbox-custom">阳证</label>
+					                        </div>
+					                        <div>
+					                            <span class="font-semibold">病机：</span>
+					                            <label class="mr-2"><input type="checkbox" name="pathogenesis" value="神" class="checkbox-custom">神</label>
+					                            <label class="mr-2"><input type="checkbox" name="pathogenesis" value="气" class="checkbox-custom">气</label>
+					                            <label><input type="checkbox" name="pathogenesis" value="形" class="checkbox-custom">形</label>
+					                        </div>
+					                        <div>
+					                            <span class="font-semibold">邪正标本：</span>
+					                            <label class="mr-2"><input type="checkbox" name="biao_ben" value="上焦表汗" class="checkbox-custom">上焦表、汗</label>
+					                            <label class="mr-2"><input type="checkbox" name="biao_ben" value="中焦肌腠大便" class="checkbox-custom">中焦肌腠、大便</label>
+					                            <label><input type="checkbox" name="biao_ben" value="下焦血分小便月经" class="checkbox-custom">下焦血分、小便、月经</label>
+					                        </div>
+					                    </div>
+					
+					                    <div class="text-sm">
+					                        <span class="font-semibold">入手层次：</span>
+					                        <label class="mr-3"><input type="checkbox" name="entry_level" value="祛邪为主" class="checkbox-custom">祛邪（开）为主，阖本为辅</label>
+					                        <label><input type="checkbox" name="entry_level" value="阖本为主" class="checkbox-custom">阖本为主，祛邪（开）为辅</label>
+					                    </div>
+					                </div>
+					
+					                <div class="bg-white p-4 rounded shadow-sm mb-4 no-break">
+					                    <h3 class="font-bold text-amber-900 mb-2 text-sm">治疗大方向</h3>
+					                    <div class="grid grid-cols-2 gap-4 mb-3 text-sm">
+					                        <div>
+					                            <span class="font-semibold">邪气和出路：</span>
+					                            <input type="text" name="treatment_pathogen" class="input-underline w-full mt-1">
+					                        </div>
+					                        <div>
+					                            <span class="font-semibold">邪正标本：</span>
+					                            <input type="text" name="treatment_biaoben" class="input-underline w-full mt-1">
+					                        </div>
+					                    </div>
+					                </div>
+					
+					                <div class="bg-white p-4 rounded shadow-sm no-break">
+					                    <h3 class="font-bold text-amber-900 mb-2 text-sm">日常生活调理建议</h3>
+					                    <textarea name="daily_advice" rows="4" class="form-textarea"></textarea>
+					                </div>
+					            </div>
+					
+					            <!-- 签名 -->
+					            <div class="mt-6 pt-4 border-t border-gray-300 flex justify-between items-end text-sm no-print">
+					                <div class="text-gray-500">
+					                    填表日期：<span id="currentDate"></span>
+					                </div>
+					                <div>
+					                    医师签名：<input type="text" name="doctor_signature" class="input-underline w-32">
+					                </div>
+					            </div>
+					        </form>
+					    </div>
+					
+					    <script>
+					        // 设置日期
+					        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('zh-CN');
+					
+					        // 生成PDF - 优化配置
+					        function generatePDF() {
+					            const element = document.getElementById('form-container');
+					            
+					            const opt = {
+					                margin: [10, 10, 10, 10],
+					                filename: `中医临证思维表_${document.querySelector('input[name="patient_name"]').value || '未命名'}_${new Date().toISOString().slice(0,10)}.pdf`,
+					                image: { type: 'jpeg', quality: 0.95 },
+					                html2canvas: { 
+					                    scale: 2,
+					                    useCORS: true,
+					                    logging: false,
+					                    letterRendering: true,
+					                    allowTaint: true
+					                },
+					                jsPDF: { 
+					                    unit: 'mm', 
+					                    format: 'a4', 
+					                    orientation: 'portrait',
+					                    putOnlyUsedFonts: true,
+					                    floatPrecision: 16
+					                },
+					                // 关键：智能分页配置
+					                pagebreak: {
+					                    mode: ['avoid-all', 'css', 'legacy'],
+					                    before: [],
+					                    after: [],
+					                    avoid: [
+					                        '.form-section', 
+					                        '.content-card', 
+					                        '.photo-container', 
+					                        '.photo-box',
+					                        'tr', 
+					                        'td', 
+					                        'th', 
+					                        '.no-break',
+					                        '.checkbox-group'
+					                    ]
+					                }
+					            };
+					
+					            // 隐藏按钮
+					            const btns = document.querySelector('.fixed');
+					            if (btns) btns.style.display = 'none';
+					            
+					            // 添加打印优化类
+					            document.body.classList.add('print-optimized');
+					
+					            // 显示加载提示
+					            const loading = document.createElement('div');
+					            loading.id = 'pdf-loading';
+					            loading.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.8);color:white;padding:20px 40px;border-radius:8px;z-index:9999;font-size:16px;';
+					            loading.textContent = '正在生成PDF，请稍候...';
+					            document.body.appendChild(loading);
+					
+					            html2pdf().set(opt).from(element).save().then(() => {
+					                if (btns) btns.style.display = 'flex';
+					                document.body.classList.remove('print-optimized');
+					                document.getElementById('pdf-loading').remove();
+					            }).catch(err => {
+					                console.error('PDF生成失败:', err);
+					                alert('PDF生成失败，建议使用"打印"功能，选择"另存为PDF"');
+					                if (btns) btns.style.display = 'flex';
+					                document.body.classList.remove('print-optimized');
+					                const loadingEl = document.getElementById('pdf-loading');
+					                if (loadingEl) loadingEl.remove();
+					            });
+					        }
+					
+					        // 自动保存到localStorage
+					        const form = document.getElementById('tcmForm');
+					        const inputs = form.querySelectorAll('input, textarea, select');
+					        
+					        inputs.forEach(input => {
+					            input.addEventListener('change', saveForm);
+					            input.addEventListener('input', debounce(saveForm, 1000));
+					        });
+					
+					        function saveForm() {
+					            const formData = {};
+					            inputs.forEach(input => {
+					                if (input.type === 'checkbox') {
+					                    if (!formData[input.name]) formData[input.name] = [];
+					                    if (input.checked) formData[input.name].push(input.value);
+					                } else {
+					                    formData[input.name] = input.value;
+					                }
+					            });
+					            localStorage.setItem('tcmFormData', JSON.stringify(formData));
+					        }
+					
+					        function debounce(func, wait) {
+					            let timeout;
+					            return function executedFunction(...args) {
+					                const later = () => {
+					                    clearTimeout(timeout);
+					                    func(...args);
+					                };
+					                clearTimeout(timeout);
+					                timeout = setTimeout(later, wait);
+					            };
+					        }
+					
+					        // 页面加载时恢复数据
+					        window.addEventListener('load', () => {
+					            const saved = localStorage.getItem('tcmFormData');
+					            if (saved) {
+					                const data = JSON.parse(saved);
+					                Object.keys(data).forEach(key => {
+					                    const inputs = document.querySelectorAll(`[name="${key}"]`);
+					                    if (inputs.length > 0) {
+					                        if (inputs[0].type === 'checkbox') {
+					                            const values = Array.isArray(data[key]) ? data[key] : [data[key]];
+					                            inputs.forEach(input => {
+					                                input.checked = values.includes(input.value);
+					                            });
+					                        } else {
+					                            inputs[0].value = data[key];
+					                        }
+					                    }
+					                });
+					            }
+					        });
+					
+					        // 打印前自动填充日期
+					        window.addEventListener('beforeprint', () => {
+					            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('zh-CN');
+					        });
+					    </script>
+					</body>
+					</html>
