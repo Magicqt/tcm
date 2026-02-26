@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>传统中医临证表</title>
+    <title>传统中医临证思维表</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -288,9 +288,9 @@
         
         <!-- 标题头 -->
         <div class="bg-gradient-to-r from-red-900 via-red-800 to-amber-900 text-white p-5 relative no-break">
-            <h1 class="text-xl font-bold title-font mb-1">传统中医临证表</h1>
-            <p class="text-amber-200 text-xs">Traditional Chinese Medicine Clinical Thinking Training Form v2.3</p>
-            <p class="text-xs text-amber-100 mt-1 opacity-80">填表说明：请如实填写患者信息，涉及隐私仅供教学使用</p>
+            <h1 class="text-xl font-bold title-font mb-1">传统中医临证思维表</h1>
+            <p class="text-amber-200 text-xs">请安静的坐下来，静心且认真的填写</p>
+            <p class="text-xs text-amber-100 mt-1 opacity-80">填表说明：请如实填写患者信息，涉及隐私仅供辨证使用</p>
         </div>
 
         <form id="tcmForm" class="p-5">
@@ -346,17 +346,33 @@
                     
                     <div class="mb-3">
                         <p class="text-xs text-gray-600 mb-2">1) 面部、舌苔、舌底照片：</p>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="photo-box">[面部照片]</div>
-                            <div class="photo-box">[舌象照片]</div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="photo-box cursor-pointer" onclick="document.getElementById('faceUpload').click()">
+                                <input type="file" id="faceUpload" accept="image/*" class="hidden" onchange="previewImage(this, 'facePreview')">
+                                <div id="facePreview">[面部照片]</div>
+                            </div>
+                            <div class="photo-box cursor-pointer" onclick="document.getElementById('tongueCoatingUpload').click()">
+                                <input type="file" id="tongueCoatingUpload" accept="image/*" class="hidden" onchange="previewImage(this, 'tongueCoatingPreview')">
+                                <div id="tongueCoatingPreview">[舌苔照片]</div>
+                            </div>
+                            <div class="photo-box cursor-pointer" onclick="document.getElementById('tongueBottomUpload').click()">
+                                <input type="file" id="tongueBottomUpload" accept="image/*" class="hidden" onchange="previewImage(this, 'tongueBottomPreview')">
+                                <div id="tongueBottomPreview">[舌底照片]</div>
+                            </div>
                         </div>
                     </div>
 
                     <div>
                         <p class="text-xs text-gray-600 mb-2">2) 腕部-手、小腿-脚照片：</p>
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="photo-box">[手部照片]</div>
-                            <div class="photo-box">[足部照片]</div>
+                            <div class="photo-box cursor-pointer" onclick="document.getElementById('handUpload').click()">
+                                <input type="file" id="handUpload" accept="image/*" class="hidden" onchange="previewImage(this, 'handPreview')">
+                                <div id="handPreview">[腕部-手照片]</div>
+                            </div>
+                            <div class="photo-box cursor-pointer" onclick="document.getElementById('footUpload').click()">
+                                <input type="file" id="footUpload" accept="image/*" class="hidden" onchange="previewImage(this, 'footPreview')">
+                                <div id="footPreview">[小腿-脚照片]</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -565,7 +581,7 @@
                                     <label class="checkbox-item"><input type="checkbox" name="exercise" value="基本不运动" class="checkbox-custom">基本不运动</label>
                                     <label class="checkbox-item"><input type="checkbox" name="exercise" value="经常散步" class="checkbox-custom">经常散步</label>
                                     <label class="checkbox-item"><input type="checkbox" name="exercise" value="慢跑或其它有氧运动" class="checkbox-custom">慢跑或其它有氧运动</label>
-                                    <label class="checkbox-item"><input type="checkbox" name="exercise" value="肌肉训练" class="checkbox-custom">肌肉训练</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="exercise" value="肌肉" class="checkbox-custom">肌肉</label>
                                     <label class="checkbox-item"><input type="checkbox" name="exercise" value="传统锻炼" class="checkbox-custom">传统锻炼（站桩、太极、瑜伽等）</label>
                                 </div>
                                 <div class="text-sm">
@@ -1048,15 +1064,33 @@
 					            localStorage.setItem('tcmFormData', JSON.stringify(formData));
 					        }
 					
-					        function debounce(func, wait) {
-					            let timeout;
-					            return function executedFunction(...args) {
-					                const later = () => {
-					                    clearTimeout(timeout);
-					                    func(...args);
-					                };
-					                clearTimeout(timeout);
-					                timeout = setTimeout(later, wait);
+					        // 预览图片函数
+        function previewImage(input, previewId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById(previewId);
+                    preview.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
 					            };
 					        }
 					
@@ -1087,5 +1121,4 @@
 					        });
 					    </script>
 					</body>
-
 					</html>
