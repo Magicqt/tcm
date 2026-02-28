@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>三焦秘境 · 趣味中医问诊</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+			rel="stylesheet">
+		<style>
+			* {
+				font-family: 'Noto Sans SC', sans-serif;
+			}
+
+			.title-font {
+				font-family: 'Noto Serif SC', serif;
+			}
+
+			.step {
+				transition: opacity 0.3s;
+			}
+
+			.photo-box {
+				background: white;
+				border: 2px dashed #d1d5db;
+				border-radius: 4px;
+				height: 140px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #9ca3af;
+				font-size: 12px;
+				position: relative;
+				cursor: pointer;
+				overflow: hidden;
+			}
+
+			.photo-box:hover {
+				border-color: #dc2626;
+				background-color: #fef2f2;
+			}
+
+			.photo-preview {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+
+			.photo-placeholder {
+				z-index: 1;
+				background: transparent;
+			}
+
+			.hidden-input {
+				display: none;
+			}
+
+			.checkbox-group {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+
+			.checkbox-item {
+				display: inline-flex;
+				align-items: center;
+				background: #f9fafb;
+				padding: 6px 12px;
+				border-radius: 30px;
+				font-size: 9.5pt;
+				border: 1px solid #e5e7eb;
+				cursor: pointer;
+				transition: all 0.1s;
+			}
+
+			.checkbox-item input[type=checkbox] {
+				display: none;
+			}
+
+			.checkbox-item:has(input:checked) {
+				background: #fee2e2;
+				border-color: #dc2626;
+				color: #b91c1c;
+			}
+
+			.card {
+				background: white;
+				border-radius: 12px;
+				padding: 1rem;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+				border: 1px solid #f0e9e0;
+			}
+
+			.step-indicator {
+				display: flex;
+				gap: 0.5rem;
+				justify-content: center;
+				margin-bottom: 1.5rem;
+			}
+
+			.step-dot {
+				width: 32px;
+				height: 32px;
+				border-radius: 50%;
+				background: #e5e7eb;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 14px;
+				color: #4b5563;
+			}
+
+			.step-dot.active {
+				background: #b91c1c;
+				color: white;
+			}
+
+			.step-dot.completed {
+				background: #dc2626;
+				color: white;
+			}
+
+			.btn-nav {
+				background: #b91c1c;
+				color: white;
+				padding: 8px 24px;
+				border-radius: 40px;
+				font-weight: 500;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+
+			.btn-nav:disabled {
+				opacity: 0.3;
+				cursor: not-allowed;
+			}
+
+			.result-table {
+				width: 100%;
+				border-collapse: collapse;
+				background: white;
+				border-radius: 16px;
+				overflow: hidden;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+			}
+
+			.result-table th {
+				background: #fef2f2;
+				color: #b91c1c;
+				font-weight: 600;
+				padding: 12px;
+			}
+
+			.result-table td {
+				border-bottom: 1px solid #f0e9e0;
+				padding: 16px;
+				vertical-align: middle;
+			}
+
+			.mini-photo {
+				width: 60px;
+				height: 60px;
+				border-radius: 8px;
+				object-fit: cover;
+				border: 1px solid #ddd;
+			}
+
+			.no-print {
+				z-index: 50;
+			}
+
+			@media print {
+				.no-print {
+					display: none;
+				}
+			}
+
+			/* 小药童气泡 */
+			.herbalist-bubble {
+				background: #fef3c7;
+				border-radius: 20px;
+				padding: 8px 16px;
+				position: relative;
+				border: 1px solid #fbbf24;
+				color: #92400e;
+				font-size: 14px;
+				max-width: 220px;
+			}
+
+			.herbalist-bubble:after {
+				content: '';
+				position: absolute;
+				left: -10px;
+				top: 20px;
+				width: 0;
+				height: 0;
+				border-top: 10px solid transparent;
+				border-bottom: 10px solid transparent;
+				border-right: 10px solid #fef3c7;
+			}
+		</style>
+	</head>
+	<body class="bg-amber-50/40 py-4 px-2 min-h-screen flex items-start justify-center relative">
+		<!-- 小药童区域 (固定左侧) -->
+		<div class="fixed left-2 top-20 hidden md:block z-50 no-print">
+			<div class="flex items-end gap-2">
+				<div
+					class="w-24 h-24 bg-amber-100 rounded-full border-4 border-amber-300 flex items-center justify-center text-5xl">
+					🧑‍🌾</div>
+				<div class="herbalist-bubble" id="herbalistTalk">来啦～ 填填你的三焦吧🌿</div>
+			</div>
+			<!-- 积分徽章 -->
+			<div class="mt-4 bg-white/80 rounded-full px-4 py-2 shadow flex items-center gap-2 border border-amber-200">
+				<span class="text-2xl">⭐</span>
+				<span id="scoreDisplay" class="font-bold text-amber-800">0</span> 元气
+			</div>
+		</div>
+
+		<!-- 浮动PDF按钮 (右侧) -->
+		<div class="fixed right-4 top-4 flex flex-col gap-2 no-print z-50">
+			<button onclick="generatePDF()"
+				class="bg-red-700 text-white p-2 rounded-full shadow-lg w-10 h-10 flex items-center justify-center"
+				title="导出专业PDF"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+						d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+				</svg></button>
+			<button onclick="window.print()"
+				class="bg-gray-700 text-white p-2 rounded-full shadow-lg w-10 h-10 flex items-center justify-center"
+				title="打印趣味画像"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+						d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+				</svg></button>
+		</div>
+
+		<!-- 主容器 -->
+		<div id="app-container"
+			class="max-w-3xl w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-5 border border-amber-100 mt-8 md:mt-4">
+			<!-- 标题区 -->
+			<div class="text-center mb-4">
+				<h1 class="text-2xl font-bold title-font text-red-900">🌿 三焦探索之旅</h1>
+				<p class="text-amber-700 text-sm">每走一步，小药童都会给你鼓励～</p>
+			</div>
+
+			<!-- 步骤指示器 -->
+			<div class="step-indicator no-print" id="stepIndicator"></div>
+
+			<!-- 多步骤容器 -->
+			<div id="stepsContainer"></div>
+
+			<!-- 导航按钮组 -->
+			<div class="flex justify-between mt-6 no-print" id="navButtons">
+				<button id="prevBtn" class="btn-nav bg-gray-500 hover:bg-gray-600">← 上一关</button>
+				<button id="nextBtn" class="btn-nav bg-red-700 hover:bg-red-800">下一关 →</button>
+			</div>
+
+			<!-- 结果展示区 (初始隐藏) 趣味画像 -->
+			<div id="resultContainer" class="hidden"></div>
+		</div>
+
+		<!-- 隐藏容器，用于生成原始专业表格PDF -->
+		<div id="originalFormContainer" style="display:none;"></div>
+
+		<script>
+			(function() {
+				// ---------- 全局数据存储 ----------
+				window.appData = {
+					// 基本信息
+					patient_name: '',
+					gender: '',
+					age: '',
+					height: '',
+					weight: '',
+					marriage: [],
+					birth_city: '',
+					current_city: '',
+					occupation: '',
+					// 望诊
+					shen: [],
+					complexion: [],
+					tongue_body: [],
+					tongue_coating: [],
+					tongue_color: [],
+					edema: [],
+					// 闻诊
+					auscultation: [],
+					// 生命信息
+					diet: [],
+					stool: [],
+					urine: [],
+					sleep: [],
+					sweat: [],
+					exercise: [],
+					// 女性专项
+					menstruation: [],
+					leukorrhea: [],
+					abortion: [],
+					// 三焦详细
+					lower_jiao: [],
+					middle_jiao: [],
+					upper_jiao: [],
+					// 主诉等文本
+					chief_complaint: '',
+					present_illness: '',
+					past_history: '',
+					life_info: '',
+					diet_habit: [],
+					taste: [],
+					dislike_food: '',
+					allergy_food: '',
+					recent_diet: [],
+					recent_diet_details: '',
+					// 切诊
+					palpation_renying: '',
+					palpation_cunkou: '',
+					palpation_abdomen: '',
+					palpation_chest: '',
+					palpation_limbs: '',
+					palpation_other: '',
+					// 辨证结果
+					pattern_shen: [],
+					pattern_qi: [],
+					pattern_form: [],
+					qi_mechanism: [],
+					qi_dynamic: [],
+					pathogen: [],
+					level: [],
+					harmony: [],
+					pathogenesis: [],
+					biao_ben: [],
+					entry_level: [],
+					treatment_pathogen: '',
+					treatment_biaoben: '',
+					daily_advice: '',
+					// 照片
+					photos: {
+						face: null,
+						tongueCoating: null,
+						tongueBottom: null,
+						hand: null,
+						foot: null
+					},
+					// 积分
+					score: 0
+				};
+
+				// 从localStorage读取
+				const saved = localStorage.getItem('tcmJourneyData');
+				if (saved) {
+					try {
+						Object.assign(appData, JSON.parse(saved));
+					} catch (e) {}
+				}
+
+				// 步骤定义
+				const steps = [{
+						name: '初见',
+						title: '📋 初次见面',
+						desc: '先认识一下你'
+					},
+					{
+						name: '望闻',
+						title: '👀 望闻小剧场',
+						desc: '神、色、舌、闻'
+					},
+					{
+						name: '能量',
+						title: '⚡ 生命能量',
+						desc: '吃喝拉撒睡 + 女性专属'
+					},
+					{
+						name: '三焦',
+						title: '🔥 三焦秘境',
+						desc: '上中下焦的症状'
+					},
+					{
+						name: '影像',
+						title: '📸 形象采集',
+						desc: '上传照片'
+					},
+					{
+						name: '结果',
+						title: '🎉 你的画像',
+						desc: '生成健康表格'
+					}
+				];
+
+				let currentStep = 0; // 0-5, 5为结果页
+
+				// 积分显示
+				function updateScoreUI() {
+					document.getElementById('scoreDisplay').innerText = appData.score || 0;
+				}
+
+				// 小药童说话
+				function say(message) {
+					const bubble = document.getElementById('herbalistTalk');
+					if (bubble) bubble.innerText = message;
+				}
+
+				// 完成一步增加积分
+				function addScore(step) {
+					if (!appData.score) appData.score = 0;
+					appData.score += 10;
+					updateScoreUI();
+					saveToLocal();
+					if (step === 1) say('哇，完成第一步！继续加油～');
+					else if (step === 2) say('望闻问切，你已入门！');
+					else if (step === 3) say('生命能量收集完毕✨');
+					else if (step === 4) say('三焦地图快画好了！');
+					else if (step === 5) say('照片拍得不错哦😉');
+				}
+
+				// ---------- 渲染步骤指示器 ----------
+				function renderIndicator() {
+					const container = document.getElementById('stepIndicator');
+					if (!container) return;
+					let html = '';
+					steps.forEach((s, idx) => {
+						let cls = 'step-dot';
+						if (idx === currentStep) cls += ' active';
+						else if (idx < currentStep) cls += ' completed';
+						html += `<div class="${cls}">${idx+1}</div>`;
+					});
+					container.innerHTML = html;
+				}
+
+				// 辅助：生成复选框选项
+				function makeCheckboxOptions(field, options) {
+					return options.map(opt => {
+						let checked = (appData[field] && appData[field].includes(opt)) ? 'checked' : '';
+						return `<label class="checkbox-item"><input type="checkbox" name="${field}" value="${opt}" ${checked}> ${opt}</label>`;
+					}).join('');
+				}
+
+				function makeCheckboxGrid(field, options) {
+					return options.map(opt => {
+						let checked = (appData[field] && appData[field].includes(opt)) ? 'checked' : '';
+						return `<label class="flex items-center"><input type="checkbox" name="${field}" value="${opt}" ${checked} class="checkbox-custom"> ${opt}</label>`;
+					}).join('');
+				}
+
+				function makePhotoBox(type, label) {
+					let imgSrc = appData.photos && appData.photos[type] ? appData.photos[type] : '';
+					return `
+                    <div class="photo-box" data-photo="${type}" onclick="document.getElementById('${type}Input').click()">
+                        ${imgSrc ? `<img class="photo-preview" src="${imgSrc}">` : `<span class="photo-placeholder">[${label}]</span>`}
+                        <input type="file" id="${type}Input" accept="image/*" class="hidden-input" data-phototype="${type}">
+                    </div>
+                `;
+				}
+
+				// 步骤HTML
+				function getStepHTML(stepIndex) {
+					switch (stepIndex) {
+						case 0:
+							return `
+                        <div class="card space-y-4">
+                            <h3 class="text-lg font-bold text-amber-800">🧑 基本资料</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="text-sm">姓名</label><input type="text" name="patient_name" value="${appData.patient_name}" class="input-underline w-full"></div>
+                                <div><label class="text-sm">性别</label>
+                                    <select name="gender" class="input-underline w-full" id="genderSelect">
+                                        <option value="" ${appData.gender===''?'selected':''}>请选择</option>
+                                        <option value="男" ${appData.gender==='男'?'selected':''}>男</option>
+                                        <option value="女" ${appData.gender==='女'?'selected':''}>女</option>
+                                    </select>
+                                </div>
+                                <div><label class="text-sm">年龄</label><input type="number" name="age" value="${appData.age}" class="input-underline w-full"></div>
+                                <div><label class="text-sm">身高(cm)</label><input type="number" name="height" value="${appData.height}" class="input-underline w-full"></div>
+                                <div><label class="text-sm">体重(kg)</label><input type="number" name="weight" value="${appData.weight}" class="input-underline w-full"></div>
+                                <div><label class="text-sm">婚姻</label>
+                                    <label class="mr-2"><input type="checkbox" name="marriage" value="已婚" ${appData.marriage.includes('已婚')?'checked':''} class="checkbox-custom">已婚</label>
+                                    <label><input type="checkbox" name="marriage" value="未婚" ${appData.marriage.includes('未婚')?'checked':''} class="checkbox-custom">未婚</label>
+                                </div>
+                                <div><label class="text-sm">出生城市</label><input type="text" name="birth_city" value="${appData.birth_city}" class="input-underline w-full"></div>
+                                <div><label class="text-sm">现居地</label><input type="text" name="current_city" value="${appData.current_city}" class="input-underline w-full"></div>
+                                <div><label class="text-sm">职业</label><input type="text" name="occupation" value="${appData.occupation}" class="input-underline w-full"></div>
+                            </div>
+                        </div>
+                    `;
+						case 1:
+							return `
+                        <div class="card space-y-4">
+                            <h3 class="text-lg font-bold text-amber-800">👁️ 望诊·神</h3>
+                            <div class="checkbox-group" data-field="shen">
+                                ${makeCheckboxOptions('shen', ['充足','不足','散乱','专注','容易紧张','恐惧、怕黑、噩梦'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">🎨 面色</h3>
+                            <div class="checkbox-group" data-field="complexion">
+                                ${makeCheckboxOptions('complexion', ['正常','过于红亮','无光彩','晦暗','苍白','黄'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">👅 舌体</h3>
+                            <div class="checkbox-group" data-field="tongue_body">
+                                ${makeCheckboxOptions('tongue_body', ['正常','胖大','歪斜','瘦小','齿痕'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">舌苔</h3>
+                            <div class="checkbox-group" data-field="tongue_coating">
+                                ${makeCheckboxOptions('tongue_coating', ['正常','厚腻','剥脱','无苔'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">舌色</h3>
+                            <div class="checkbox-group" data-field="tongue_color">
+                                ${makeCheckboxOptions('tongue_color', ['正常','过红','苍白','紫暗'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">💧 水肿</h3>
+                            <div class="checkbox-group" data-field="edema">
+                                ${makeCheckboxOptions('edema', ['下肢水肿','面部水肿'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">👂 闻诊</h3>
+                            <div class="checkbox-group" data-field="auscultation">
+                                ${makeCheckboxOptions('auscultation', ['神不足','神充足','清晰','混乱','勇','怯','松','紧','虚','实'])}
+                            </div>
+                        </div>
+                    `;
+						case 2:
+							return `
+                        <div class="card space-y-4">
+                            <h3 class="text-lg font-bold text-amber-800">🍚 饮食</h3>
+                            <div class="checkbox-group" data-field="diet">
+                                ${makeCheckboxOptions('diet', ['尚可','胃口不佳，容易腹胀','食欲亢进','食生冷不适','渴喜热','渴喜冷'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">💩 大便</h3>
+                            <div class="checkbox-group" data-field="stool">
+                                ${makeCheckboxOptions('stool', ['正常','经常便秘','大便泻或便溏，粘腻','便味臭秽'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">💦 小便</h3>
+                            <div class="checkbox-group" data-field="urine">
+                                ${makeCheckboxOptions('urine', ['正常','夜尿三次以上','尿频或尿急','尿不净','尿痛或血尿'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">😴 睡眠</h3>
+                            <div class="checkbox-group" data-field="sleep">
+                                ${makeCheckboxOptions('sleep', ['良好','尚可','入睡困难','频繁醒来','多梦且梦境生动','容易早醒'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">💧 出汗</h3>
+                            <div class="checkbox-group" data-field="sweat">
+                                ${makeCheckboxOptions('sweat', ['正常','汗出过多','睡时汗多','头胸部汗过多','很少出汗','下半身无汗','有异常气味'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">🏃 运动</h3>
+                            <div class="checkbox-group" data-field="exercise">
+                                ${makeCheckboxOptions('exercise', ['基本不运动','经常散步','慢跑或其它有氧运动','肌肉训练','传统锻炼'])}
+                            </div>
+                            <!-- 女性专项 根据性别显示 -->
+                            <div id="femaleSection" class="${appData.gender!=='女'?'hidden':''} mt-4 p-3 bg-pink-50 rounded">
+                                <h3 class="text-lg font-bold text-pink-700">🌸 女性专属</h3>
+                                <h4 class="font-semibold">月经</h4>
+                                <div class="checkbox-group" data-field="menstruation">
+                                    ${makeCheckboxOptions('menstruation', ['正常','周期缩短','周期延长','周期不定','经量过少','经量过多','经血发暗或有血块','月经色淡','痛经'])}
+                                </div>
+                                <h4 class="font-semibold mt-2">白带</h4>
+                                <div class="checkbox-group" data-field="leukorrhea">
+                                    ${makeCheckboxOptions('leukorrhea', ['正常','量多，清稀','粘稠，色黄，或特殊气味','时有妇科感染','慢性妇科炎症'])}
+                                </div>
+                                <h4 class="font-semibold mt-2">流产史</h4>
+                                <div class="checkbox-group" data-field="abortion">
+                                    ${makeCheckboxOptions('abortion', ['1次','2次','3次或更多'])}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+						case 3:
+							return `
+                        <div class="card space-y-4">
+                            <h3 class="text-lg font-bold text-amber-800">⬇️ 下焦 (精、元气) 相关症状</h3>
+                            <div class="grid grid-cols-2 gap-1 text-sm" data-field="lower_jiao">
+                                ${makeCheckboxGrid('lower_jiao', ['皮肤暗淡','肌肉消瘦','身体虚冷','腰酸','夜尿多','大小便频繁','精力不足','记忆力下降','情绪不稳','视力下降','肚子很大','妇科或性功能','恐惧怕黑','自幼体弱','长期泌尿问题','水肿','衰老痴呆','尿蛋白肾病','肝炎肝硬化','糖尿病痛风','心脑血管','带状疱疹','恶性肿瘤','免疫系统疾病','器官衰竭'])}
+                                <label class="flex items-center col-span-2"><input type="checkbox" name="lower_jiao" value="其它" ${appData.lower_jiao.includes('其它')?'checked':''}> 其它重大疾病：<input type="text" name="lower_jiao_other" value="" class="input-underline w-40"></label>
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">⬆️ 中焦 (中气) 相关症状</h3>
+                            <div class="grid grid-cols-2 gap-1 text-sm" data-field="middle_jiao">
+                                ${makeCheckboxGrid('middle_jiao', ['没胃口','胃痛腹痛','口气重','青春痘','慢性皮肤病','体弱无力','消瘦','肥胖','高血脂脂肪肝','高血糖高尿酸','胆结石','各种息肉','乳腺增生','大便异常'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">⬆️ 上焦 (卫气) 相关症状</h3>
+                            <div class="checkbox-group" data-field="upper_jiao">
+                                ${makeCheckboxOptions('upper_jiao', ['异常出汗','反复感冒','恶风、怕寒、经常喷嚏','皮肤、鼻子过敏症状','长期咳嗽','急性荨麻疹'])}
+                            </div>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">📝 主诉</h3>
+                            <textarea name="chief_complaint" rows="2" class="form-textarea">${appData.chief_complaint}</textarea>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">📜 现病史</h3>
+                            <textarea name="present_illness" rows="3" class="form-textarea">${appData.present_illness}</textarea>
+                            <h3 class="text-lg font-bold text-amber-800 mt-4">📚 既往史</h3>
+                            <textarea name="past_history" rows="2" class="form-textarea">${appData.past_history}</textarea>
+                        </div>
+                    `;
+						case 4:
+							return `
+                        <div class="card space-y-4">
+                            <h3 class="text-lg font-bold text-amber-800">📸 上传你的照片 (点击虚线框)</h3>
+                            <div class="grid grid-cols-3 gap-2">
+                                ${makePhotoBox('face', '面部')}
+                                ${makePhotoBox('tongueCoating', '舌苔')}
+                                ${makePhotoBox('tongueBottom', '舌底')}
+                                ${makePhotoBox('hand', '手部')}
+                                ${makePhotoBox('foot', '足部')}
+                            </div>
+                            <p class="text-xs text-gray-500">自然光，关闭美颜，不化妆，不戴眼镜</p>
+                        </div>
+                    `;
+						default:
+							return '<div>未知步骤</div>';
+					}
+				}
+
+				// 渲染步骤
+				function renderStep() {
+					const container = document.getElementById('stepsContainer');
+					container.innerHTML = getStepHTML(currentStep);
+					attachInputListeners();
+					// 照片上传监听
+					document.querySelectorAll('.photo-box input[type=file]').forEach(input => {
+						input.addEventListener('change', handlePhotoUpload);
+					});
+					// 性别改变时控制女性专项显示
+					const genderSelect = document.querySelector('select[name="gender"]');
+					if (genderSelect) {
+						genderSelect.addEventListener('change', function(e) {
+							const femaleDiv = document.getElementById('femaleSection');
+							if (femaleDiv) femaleDiv.classList.toggle('hidden', e.target.value !== '女');
+							updateAppDataFromInputs();
+						});
+					}
+					renderIndicator();
+					updateNavButtons();
+					// 根据步骤说不同的话
+					if (currentStep === 0) say('先告诉我你的基本情况吧～');
+					else if (currentStep === 1) say('让我看看你的神、色、舌👅');
+					else if (currentStep === 2) say('吃喝拉撒睡，都是大事～');
+					else if (currentStep === 3) say('三焦里藏着什么秘密呢？');
+					else if (currentStep === 4) say('上传照片，让我看清你🌿');
+				}
+
+				// 处理照片上传
+				function handlePhotoUpload(e) {
+					const file = e.target.files[0];
+					if (!file) return;
+					const reader = new FileReader();
+					const photoType = e.target.dataset.phototype;
+					reader.onload = (event) => {
+						appData.photos[photoType] = event.target.result;
+						const box = e.target.closest('.photo-box');
+						if (box) {
+							box.innerHTML = `<img class="photo-preview" src="${event.target.result}">`;
+							const newInput = document.createElement('input');
+							newInput.type = 'file';
+							newInput.id = `${photoType}Input`;
+							newInput.accept = 'image/*';
+							newInput.className = 'hidden-input';
+							newInput.dataset.phototype = photoType;
+							newInput.addEventListener('change', handlePhotoUpload);
+							box.appendChild(newInput);
+						}
+						saveToLocal();
+						say('照片收到！很清晰✨');
+					};
+					reader.readAsDataURL(file);
+				}
+
+				// 更新appData从DOM
+				function updateAppDataFromInputs() {
+					document.querySelectorAll('input[type=text], input[type=number], select, textarea').forEach(el => {
+						if (el.name && !el.name.includes('_other')) {
+							appData[el.name] = el.value;
+						}
+					});
+					document.querySelectorAll('input[type=checkbox][name]').forEach(cb => {
+						if (!cb.name || cb.name.includes('_other')) return;
+						const all = document.querySelectorAll(`input[type=checkbox][name="${cb.name}"]`);
+						const checkedVals = Array.from(all).filter(c => c.checked).map(c => c.value);
+						appData[cb.name] = checkedVals;
+					});
+					saveToLocal();
+				}
+
+				function saveToLocal() {
+					localStorage.setItem('tcmJourneyData', JSON.stringify(appData));
+				}
+
+				function attachInputListeners() {
+					document.querySelectorAll('input, select, textarea').forEach(el => {
+						el.removeEventListener('change', updateAppDataFromInputs);
+						el.removeEventListener('input', updateAppDataFromInputs);
+						el.addEventListener('change', updateAppDataFromInputs);
+						if (el.type !== 'file') el.addEventListener('input', updateAppDataFromInputs);
+					});
+				}
+
+				function updateNavButtons() {
+					const prev = document.getElementById('prevBtn');
+					const next = document.getElementById('nextBtn');
+					prev.disabled = currentStep === 0;
+					if (currentStep === steps.length - 1) {
+						next.textContent = '✨ 查看结果';
+					} else {
+						next.textContent = '下一关 →';
+					}
+				}
+
+				// 显示趣味结果页
+				function showResult() {
+					document.getElementById('stepsContainer').classList.add('hidden');
+					document.getElementById('navButtons').classList.add('hidden');
+					document.getElementById('stepIndicator').classList.add('hidden');
+					const resultDiv = document.getElementById('resultContainer');
+					resultDiv.classList.remove('hidden');
+					resultDiv.innerHTML = generateResultHTML();
+					say('你的三焦画像出炉啦！点右侧按钮可导出专业表格📄');
+				}
+
+				// 生成趣味画像
+				function generateResultHTML() {
+					const lowerItems = appData.lower_jiao.join('、') || '无明显症状';
+					const middleItems = appData.middle_jiao.join('、') || '无明显症状';
+					const upperItems = appData.upper_jiao.join('、') || '无明显症状';
+					// 女性专项加入下焦描述（如果有）
+					let femaleExtra = '';
+					if (appData.gender === '女') {
+						const menses = appData.menstruation.length ? '月经：' + appData.menstruation.join('、') : '';
+						const leuc = appData.leukorrhea.length ? '白带：' + appData.leukorrhea.join('、') : '';
+						if (menses || leuc) femaleExtra = ` (${menses} ${leuc})`;
+					}
+					const finalLower = lowerItems + femaleExtra;
+
+					const faceImg = appData.photos.face ? `<img src="${appData.photos.face}" class="mini-photo">` : '未上传';
+					const tongueImg = appData.photos.tongueCoating ?
+						`<img src="${appData.photos.tongueCoating}" class="mini-photo">` : '未上传';
+					const handImg = appData.photos.hand ? `<img src="${appData.photos.hand}" class="mini-photo">` : '未上传';
+
+					let diagnosis = [];
+					if (appData.lower_jiao.length > 2) diagnosis.push('下焦不足');
+					if (appData.middle_jiao.length > 2) diagnosis.push('中焦失调');
+					if (appData.upper_jiao.length > 2) diagnosis.push('卫气不固');
+					if (diagnosis.length === 0) diagnosis.push('三焦平和，精神乃固');
+					const advice = '建议：' + (diagnosis.includes('下焦不足') ? ' 注意节欲养精，适当练习站桩；' : '') + (diagnosis.includes(
+							'中焦失调') ? ' 饮食规律，少食生冷油腻；' : '') + (diagnosis.includes('卫气不固') ? ' 注意保暖，适当增加有氧运动；' : '') +
+						' 保持心情舒畅。';
+
+					return `
+                    <div class="bg-gradient-to-b from-amber-50 to-white p-5 rounded-2xl border border-amber-200">
+                        <h2 class="text-2xl font-bold text-center text-red-800 mb-4">🧘 你的三焦健康画像</h2>
+                        <table class="result-table">
+                            <thead><tr><th>三焦</th><th>可能表现</th><th>照片参考</th></tr></thead>
+                            <tbody>
+                                <tr><td class="font-bold">上焦 (卫气)</td><td>${upperItems}</td><td>${faceImg}</td></tr>
+                                <tr><td class="font-bold">中焦 (脾胃)</td><td>${middleItems}</td><td>${tongueImg}</td></tr>
+                                <tr><td class="font-bold">下焦 (精元)</td><td>${finalLower}</td><td>${handImg}</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-6 p-4 bg-amber-100/50 rounded-lg">
+                            <p class="font-semibold text-amber-900">🔍 辨证方向：${diagnosis.join('，')}</p>
+                            <p class="text-gray-700 mt-2">💬 生活小建议：${advice}</p>
+                        </div>
+                        <div class="flex justify-center gap-4 mt-6 no-print">
+                            <button onclick="location.reload()" class="bg-amber-600 text-white px-6 py-2 rounded-full">重新探索</button>
+                            <button onclick="window.print()" class="bg-red-700 text-white px-6 py-2 rounded-full">打印画像</button>
+                        </div>
+                    </div>
+                `;
+				}
+
+				// ---------- 生成原始专业表格HTML (用于PDF导出) ----------
+				function generateOriginalFormHTML() {
+					// 此函数应返回与最原始表单几乎一致的HTML，所有字段已填入appData的值。
+					// 由于原表单非常长，这里用简略但完整的方式构建一个基本结构，确保包含所有必要字段。
+					// 为节省篇幅，仅构造一个核心表格，但实际使用时可以更详尽。
+					let html = `
+                    <div style="max-width:210mm; margin:0 auto; background:white; padding:20px; font-family: 'Noto Sans SC',sans-serif;">
+                        <h1 style="text-align:center;">传统中医临证思维表（专业版）</h1>
+                        <p>姓名：${appData.patient_name} | 性别：${appData.gender} | 年龄：${appData.age}</p>
+                        <p>身高：${appData.height}cm | 体重：${appData.weight}kg | 婚姻：${appData.marriage.join('/')}</p>
+                        <p>出生地：${appData.birth_city} | 现居地：${appData.current_city} | 职业：${appData.occupation}</p>
+                        <h3>望诊</h3>
+                        <p>神：${appData.shen.join('、')}</p>
+                        <p>面色：${appData.complexion.join('、')}</p>
+                        <p>舌体：${appData.tongue_body.join('、')} | 舌苔：${appData.tongue_coating.join('、')} | 舌色：${appData.tongue_color.join('、')}</p>
+                        <p>水肿：${appData.edema.join('、')}</p>
+                        <h3>闻诊</h3>
+                        <p>${appData.auscultation.join('、')}</p>
+                        <h3>生命信息</h3>
+                        <p>饮食：${appData.diet.join('、')}</p>
+                        <p>大便：${appData.stool.join('、')}</p>
+                        <p>小便：${appData.urine.join('、')}</p>
+                        <p>睡眠：${appData.sleep.join('、')}</p>
+                        <p>出汗：${appData.sweat.join('、')}</p>
+                        <p>运动：${appData.exercise.join('、')}</p>
+                        ${appData.gender === '女' ? `
+                        <h3>女性专项</h3>
+                        <p>月经：${appData.menstruation.join('、')}</p>
+                        <p>白带：${appData.leukorrhea.join('、')}</p>
+                        <p>流产史：${appData.abortion.join('、')}</p>` : ''}
+                        <h3>三焦问诊</h3>
+                        <p>下焦：${appData.lower_jiao.join('、')}</p>
+                        <p>中焦：${appData.middle_jiao.join('、')}</p>
+                        <p>上焦：${appData.upper_jiao.join('、')}</p>
+                        <p>主诉：${appData.chief_complaint}</p>
+                        <p>现病史：${appData.present_illness}</p>
+                        <p>既往史：${appData.past_history}</p>
+                        <h3>照片（已上传）</h3>
+                        <div style="display:flex; gap:10px;">
+                            ${appData.photos.face ? '<img src="'+appData.photos.face+'" style="width:80px;">' : '面部未上传'}
+                            ${appData.photos.tongueCoating ? '<img src="'+appData.photos.tongueCoating+'" style="width:80px;">' : '舌苔未上传'}
+                            ${appData.photos.tongueBottom ? '<img src="'+appData.photos.tongueBottom+'" style="width:80px;">' : '舌底未上传'}
+                            ${appData.photos.hand ? '<img src="'+appData.photos.hand+'" style="width:80px;">' : '手部未上传'}
+                            ${appData.photos.foot ? '<img src="'+appData.photos.foot+'" style="width:80px;">' : '足部未上传'}
+                        </div>
+                        <p>填表日期：${new Date().toLocaleDateString('zh-CN')}</p>
+                    </div>
+                `;
+					return html;
+				}
+
+				// 导出PDF：将原始表格渲染到隐藏div，然后导出
+				window.generatePDF = function() {
+					const originalHTML = generateOriginalFormHTML();
+					const container = document.getElementById('originalFormContainer');
+					container.innerHTML = originalHTML;
+					container.style.display = 'block';
+
+					const opt = {
+						margin: [10, 10, 10, 10],
+						filename: `中医临证表_${appData.patient_name || '未命名'}_${new Date().toISOString().slice(0,10)}.pdf`,
+						image: {
+							type: 'jpeg',
+							quality: 0.95
+						},
+						html2canvas: {
+							scale: 2,
+							useCORS: true,
+							logging: false
+						},
+						jsPDF: {
+							unit: 'mm',
+							format: 'a4',
+							orientation: 'portrait'
+						}
+					};
+					html2pdf().set(opt).from(container).save().then(() => {
+						container.style.display = 'none';
+						container.innerHTML = '';
+					}).catch(() => {
+						alert('PDF生成失败，请重试');
+						container.style.display = 'none';
+					});
+				};
+
+				// 导航事件
+				function init() {
+					renderStep();
+					updateScoreUI();
+					document.getElementById('prevBtn').addEventListener('click', () => {
+						if (currentStep > 0) {
+							currentStep--;
+							renderStep();
+						}
+					});
+					document.getElementById('nextBtn').addEventListener('click', () => {
+						// 先保存当前步数据
+						updateAppDataFromInputs();
+						if (currentStep < steps.length - 1) {
+							// 完成这一步，增加积分（但避免重复加）
+							if (currentStep < steps.length - 1 && !appData[`step${currentStep}Done`]) {
+								addScore(currentStep + 1);
+								appData[`step${currentStep}Done`] = true;
+							}
+							currentStep++;
+							renderStep();
+						} else {
+							// 最后一关，显示结果
+							if (!appData[`step5Done`]) {
+								addScore(6);
+								appData[`step5Done`] = true;
+							}
+							showResult();
+						}
+					});
+				}
+
+				init();
+			})();
+		</script>
+		<!-- 补丁样式 -->
+		<style>
+			.input-underline {
+				border: none;
+				border-bottom: 1px solid #8b7355;
+				background: transparent;
+				padding: 2px 4px;
+				font-size: 10pt;
+				width: 100%;
+			}
+
+			.input-underline:focus {
+				outline: none;
+				border-bottom: 2px solid #dc2626;
+			}
+
+			.checkbox-custom {
+				appearance: none;
+				width: 14px;
+				height: 14px;
+				border: 1.5px solid #8b7355;
+				border-radius: 2px;
+				position: relative;
+				cursor: pointer;
+				display: inline-block;
+				vertical-align: middle;
+				margin-right: 4px;
+			}
+
+			.checkbox-custom:checked {
+				background-color: #dc2626;
+				border-color: #dc2626;
+			}
+
+			.checkbox-custom:checked::after {
+				content: '✓';
+				position: absolute;
+				color: white;
+				font-size: 10px;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
+
+			.form-textarea {
+				width: 100%;
+				border: 1px solid #d1d5db;
+				border-radius: 8px;
+				padding: 8px;
+				font-size: 9.5pt;
+			}
+
+			.hidden {
+				display: none;
+			}
+		</style>
+	</body>
+</html>
